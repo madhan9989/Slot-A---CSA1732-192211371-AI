@@ -1,0 +1,68 @@
+from heapq import heappop, heappush
+
+def a_star(graph, start, goal, h):
+    """
+    A* algorithm to find the shortest path in a graph.
+
+    Parameters:
+    graph (dict): A dictionary where keys are node names and values are dictionaries
+                  of neighboring node names and their corresponding edge weights.
+    start (str): The starting node.
+    goal (str): The goal node.
+    h (dict): A dictionary where keys are node names and values are the heuristic estimates
+              of the cost to reach the goal from that node.
+
+    Returns:
+    tuple: The total cost of the shortest path and the order of nodes in that path.
+    """
+    open_set = []
+    heappush(open_set, (0 + h[start], 0, start, [start]))  # (f, g, current_node, path)
+    closed_set = set()
+    g_scores = {start: 0}
+
+    while open_set:
+        f, g, current, path = heappop(open_set)
+
+        if current in closed_set:
+            continue
+
+        if current == goal:
+            return g, path
+
+        closed_set.add(current)
+
+        for neighbor, weight in graph[current].items():
+            if neighbor in closed_set:
+                continue
+
+            tentative_g = g + weight
+
+            if neighbor not in g_scores or tentative_g < g_scores[neighbor]:
+                g_scores[neighbor] = tentative_g
+                f_score = tentative_g + h[neighbor]
+                heappush(open_set, (f_score, tentative_g, neighbor, path + [neighbor]))
+
+    return float('inf'), []  # Return infinity cost and empty path if there is no path to the goal
+
+# Example usage:
+if __name__ == "__main__":
+    graph = {
+        'A': {'B': 1, 'C': 4},
+        'B': {'A': 1, 'C': 2, 'D': 5},
+        'C': {'A': 4, 'B': 2, 'D': 1},
+        'D': {'B': 5, 'C': 1}
+    }
+
+    # Heuristic estimates of the cost to reach the goal node 'D' from each node
+    h = {
+        'A': 7,
+        'B': 6,
+        'C': 2,
+        'D': 0
+    }
+
+    start = 'A'
+    goal = 'D'
+    cost, path = a_star(graph, start, goal, h)
+    print("Total cost:", cost)
+    print("Path:", " -> ".join(path))
