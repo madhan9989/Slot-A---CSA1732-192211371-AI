@@ -1,0 +1,67 @@
+import itertools
+
+def travelling_salesman_problem(graph):
+    """
+    Solves the Travelling Salesman Problem using dynamic programming (Held-Karp algorithm).
+
+    Parameters:
+    graph (dict): A dictionary where keys are node names and values are dictionaries
+                  of neighboring node names and their corresponding edge weights.
+
+    Returns:
+    tuple: The length of the shortest path and the order of nodes in that path.
+    """
+    # Get list of nodes
+    nodes = list(graph.keys())
+    n = len(nodes)
+    
+    # Initialize memoization table
+    C = {}
+    for k in range(1, n):
+        C[(1 << k, k)] = (graph['0'][nodes[k]], 0)
+    
+    # Iterate subsets of increasing length
+    for subset_size in range(2, n):
+        for subset in itertools.combinations(range(1, n), subset_size):
+            bits = sum([1 << x for x in subset])
+            for k in subset:
+                prev_bits = bits & ~(1 << k)
+                res = []
+                for m in subset:
+                    if m == 0 or m == k:
+                        continue
+                    res.append((C[(prev_bits, m)][0] + graph[nodes[m]][nodes[k]], m))
+                C[(bits, k)] = min(res)
+    
+    # Calculate minimum cost to return to starting node
+    bits = (2 ** n - 1) - 1
+    res = []
+    for k in range(1, n):
+        res.append((C[(bits, k)][0] + graph[nodes[k]]['0'], k))
+    opt, parent = min(res)
+    
+    # Reconstruct path
+    path = []
+    bits = (2 ** n - 1) - 1
+    for i in range(n - 1):
+        path.append(parent)
+        next_bits = bits & ~(1 << parent)
+        _, parent = C[(bits, parent)]
+        bits = next_bits
+    path.append(0)
+    path = list(map(str, path))
+    
+    return opt, path[::-1]
+
+# Example usage:
+if __name__ == "__main__":
+    graph = {
+        '0': {'1': 10, '2': 15, '3': 20},
+        '1': {'0': 10, '2': 35, '3': 25},
+        '2': {'0': 15, '1': 35, '3': 30},
+        '3': {'0': 20, '1': 25, '2': 30}
+    }
+    
+    cost, path = travelling_salesman_problem(graph)
+    print("Minimum cost:", cost)
+    print("Optimal path:", " -> ".join(path))
