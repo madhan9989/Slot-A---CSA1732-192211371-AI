@@ -1,0 +1,68 @@
+from collections import deque
+
+def is_valid_state(state, jug1_capacity, jug2_capacity):
+    return 0 <= state[0] <= jug1_capacity and 0 <= state[1] <= jug2_capacity
+
+def get_next_states(state, jug1_capacity, jug2_capacity):
+    next_states = []
+    jug1, jug2 = state
+
+    # Fill Jug1
+    next_states.append((jug1_capacity, jug2))
+    
+    # Fill Jug2
+    next_states.append((jug1, jug2_capacity))
+    
+    # Empty Jug1
+    next_states.append((0, jug2))
+    
+    q`      # Empty Jug2
+    next_states.append((jug1, 0))
+    
+    # Pour Jug1 to Jug2
+    pour_to_jug2 = min(jug1, jug2_capacity - jug2)
+    next_states.append((jug1 - pour_to_jug2, jug2 + pour_to_jug2))
+    
+    # Pour Jug2 to Jug1
+    pour_to_jug1 = min(jug2, jug1_capacity - jug1)
+    next_states.append((jug1 + pour_to_jug1, jug2 - pour_to_jug1))
+    
+    return next_states
+
+def bfs(jug1_capacity, jug2_capacity, target):
+    initial_state = (0, 0)
+    queue = deque([(initial_state, [])])
+    visited = set()
+    
+    while queue:
+        current_state, path = queue.popleft()
+        
+        if current_state in visited:
+            continue
+        
+        visited.add(current_state)
+        
+        jug1, jug2 = current_state
+        if jug1 == target or jug2 == target:
+            return path + [current_state]
+        
+        for next_state in get_next_states(current_state, jug1_capacity, jug2_capacity):
+            if is_valid_state(next_state, jug1_capacity, jug2_capacity) and next_state not in visited:
+                queue.append((next_state, path + [current_state]))
+    
+    return None
+
+def print_solution(solution):
+    if solution:
+        for state in solution:
+            print(f"Jug1: {state[0]} liters, Jug2: {state[1]} liters")
+    else:
+        print("No solution found")
+
+# Example usage
+jug1_capacity = 4
+jug2_capacity = 3
+target = 2
+
+solution = bfs(jug1_capacity, jug2_capacity, target)
+print_solution(solution)
