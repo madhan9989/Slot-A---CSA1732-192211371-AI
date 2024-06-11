@@ -1,0 +1,35 @@
+def solve_n_queens(n):
+    def is_safe(board, row, col):
+        for i in range(row):
+            if board[i] == col or abs(board[i] - col) == abs(i - row):
+                return False
+        return True
+
+    def solve(row):
+        if row == n:
+            result.append(board[:])
+            return True  # Return True to stop after finding one solution
+        for col in range(n):
+            if is_safe(board, row, col):
+                board[row] = col
+                if solve(row + 1):  # Stop searching after finding one solution
+                    return True
+        return False
+    
+    board = [-1] * n
+    result = []
+    solve(0)
+    return result
+
+def print_solution(solution):
+    for row in solution:
+        print(''.join('Q' if i == row else '.' for i in range(len(solution))))
+    print()
+
+# Example usage
+solution = solve_n_queens(8)
+if solution:
+    print("Solution found:")
+    print_solution(solution[0])
+else:
+    print("No solution found.")
