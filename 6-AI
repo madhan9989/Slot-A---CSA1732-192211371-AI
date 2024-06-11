@@ -1,0 +1,55 @@
+class VacuumCleanerAgent:
+    def __init__(self, environment):
+        self.environment = environment
+        self.position = (0, 0)  # Start at the top-left corner
+
+    def move(self, direction):
+        x, y = self.position
+        if direction == 'UP' and x > 0:
+            self.position = (x - 1, y)
+        elif direction == 'DOWN' and x < len(self.environment) - 1:
+            self.position = (x + 1, y)
+        elif direction == 'LEFT' and y > 0:
+            self.position = (x, y - 1)
+        elif direction == 'RIGHT' and y < len(self.environment[0]) - 1:
+            self.position = (x, y + 1)
+
+    def clean(self):
+        x, y = self.position
+        if self.environment[x][y] == 1:
+            self.environment[x][y] = 0
+            print(f"Cleaned cell ({x}, {y})")
+
+    def is_dirty(self):
+        x, y = self.position
+        return self.environment[x][y] == 1
+
+    def run(self):
+        # Simple strategy: move in a fixed pattern and clean when necessary
+        directions = ['RIGHT', 'DOWN', 'LEFT', 'UP']
+        for _ in range(2):  # Two layers (for a 2x2 grid)
+            for direction in directions:
+                if self.is_dirty():
+                    self.clean()
+                self.move(direction)
+
+        # Final clean check
+        if self.is_dirty():
+            self.clean()
+
+# Initialize a 2x2 environment (0 = clean, 1 = dirty)
+environment = [
+    [1, 0],
+    [1, 1]
+]
+
+# Create the vacuum cleaner agent
+agent = VacuumCleanerAgent(environment)
+
+# Run the agent
+agent.run()
+
+# Display the final state of the environment
+print("Final state of the environment:")
+for row in environment:
+    print(row)
