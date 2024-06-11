@@ -1,0 +1,40 @@
+import itertools
+
+def solve_cryptarithm(words, result):
+    # Create a set of unique letters
+    unique_letters = set("".join(words) + result)
+    
+    # Ensure that the number of unique letters is 10 or fewer
+    if len(unique_letters) > 10:
+        raise ValueError("Too many unique letters")
+
+    # Generate all permutations of digits 0-9 for the unique letters
+    for perm in itertools.permutations('0123456789', len(unique_letters)):
+        # Create a dictionary mapping letters to digits
+        letter_to_digit = dict(zip(unique_letters, perm))
+        
+        # Replace letters with digits in the words and result
+        words_values = [int("".join(letter_to_digit[c] for c in word)) for word in words]
+        result_value = int("".join(letter_to_digit[c] for c in result))
+        
+        # Check if the sum of the words equals the result
+        if sum(words_values) == result_value:
+            # Ensure no leading zeroes
+            if all(str(word_value)[0] != '0' for word_value in words_values) and str(result_value)[0] != '0':
+                solution = {word: word_value for word, word_value in zip(words, words_values)}
+                solution[result] = result_value
+                return solution, letter_to_digit
+
+    return None, None
+
+words = ["SEND", "MORE"]
+result = "MONEY"
+
+solution, letter_to_digit = solve_cryptarithm(words, result)
+
+if solution:
+    print("Solution found!")
+    print(f"Letter to digit mapping: {letter_to_digit}")
+    print(f"Values: {solution}")
+else:
+    print("No solution found.")
