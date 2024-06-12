@@ -1,0 +1,80 @@
+import numpy as np
+from collections import Counter
+
+class Node:
+    def _init_(self, feature=None, value=None, result=None):
+        self.feature = feature  # Feature to split on
+        self.value = value      # Value of the feature to split on
+        self.result = result    # Result if node is a leaf node
+        self.children = {}      # Child nodes in the decision tree
+
+def entropy(y):
+    """Calculates entropy of a target variable."""
+    counter = Counter(y)
+    probabilities = [count / len(y) for count in counter.values()]
+    return -sum(p * np.log2(p) for p in probabilities)
+
+def information_gain(X, y, feature, threshold):
+    """Calculates information gain based on a feature and threshold."""
+    parent_entropy = entropy(y)
+    left_indices = X[:, feature] < threshold
+    right_indices = ~left_indices
+    left_entropy = entropy(y[left_indices])
+    right_entropy = entropy(y[right_indices])
+    left_weight = sum(left_indices) / len(y)
+    right_weight = sum(right_indices) / len(y)
+    return parent_entropy - (left_weight * left_entropy + right_weight * right_entropy)
+
+def find_best_split(X, y):
+    """Finds the best feature and threshold to split on."""
+    best_gain = 0
+    best_feature = None
+    best_threshold = None
+    for feature in range(X.shape[1]):
+        thresholds = np.unique(X[:, feature])
+        for threshold in thresholds:
+            gain = information_gain(X, y, feature, threshold)
+            if gain > best_gain:
+                best_gain = gain
+                best_feature = feature
+                best_threshold = threshold
+    return best_feature, best_threshold
+
+def create_decision_tree(X, y):
+    """Creates a decision tree using ID3 algorithm."""
+    if len(set(y)) == 1:  # If all examples have the same label, return a leaf node
+        return Node(result=y[0])
+    
+    best_feature, best_threshold = find_best_split(X, y)
+    if best_feature is None:  # If no split improves entropy, return a leaf node with the majority label
+        return Node(result=Counter(y).most_common(1)[0][0])
+    
+    node = Node(feature=best_feature, value=best_threshold)
+    left_indices = X[:, best_feature] < best_threshold
+    right_indices = ~left_indices
+    node.children['<'] = create_decision_tree(X[left_indices], y[left_indices])
+    node.children['>='] = create_decision_tree(X[right_indices], y[right_indices])
+    return node
+
+def predict(node, example):
+    """Predicts the label of an example using the decision tree."""
+    if node.result is not None:
+        return node.result
+    direction = '<' if example[node.feature] < node.value else '>='
+    return predict(node.children[direction], example)
+
+# Example usage:
+if _name_ == "_main_":
+    X = np.array([[0, 0],
+                  [0, 1],
+                  [1, 0],
+                  [1, 1]])
+    y = np.array([0, 0, 1, 1])
+    
+    tree = create_decision_tree(X, y)
+    print("Decision Tree:")
+    print(tree)
+    
+    example = [0, 1]  # Example to predict
+    prediction = predict(tree, example)
+    print("Prediction for example {}: {}".format(example,prediction))
