@@ -1,0 +1,92 @@
+% Facts defining family relationships
+
+% Parent relationships
+parent(john, mary).     % John is a parent of Mary
+parent(john, james).    % John is a parent of James
+parent(susan, mary).    % Susan is a parent of Mary
+parent(susan, james).   % Susan is a parent of James
+parent(mary, peter).    % Mary is a parent of Peter
+parent(mary, ann).      % Mary is a parent of Ann
+parent(mike, peter).    % Mike is a parent of Peter
+parent(mike, ann).      % Mike is a parent of Ann
+
+% Male and Female relationships
+male(john).
+male(james).
+male(peter).
+male(mike).
+
+female(susan).
+female(mary).
+female(ann).
+
+% Rules defining family relationships
+
+% A is a father of B if A is a parent of B and A is male
+father(A, B) :-
+    parent(A, B),
+    male(A).
+
+% A is a mother of B if A is a parent of B and A is female
+mother(A, B) :-
+    parent(A, B),
+    female(A).
+
+% A is a grandparent of C if A is a parent of B and B is a parent of C
+grandparent(A, C) :-
+    parent(A, B),
+    parent(B, C).
+
+% A is a sibling of B if they share at least one parent
+sibling(A, B) :-
+    parent(P, A),
+    parent(P, B),
+    A \= B.
+
+% A is a brother of B if A is a sibling of B and A is male
+brother(A, B) :-
+    sibling(A, B),
+    male(A).
+
+% A is a sister of B if A is a sibling of B and A is female
+sister(A, B) :-
+    sibling(A, B),
+    female(A).
+
+% A is an uncle of C if A is a sibling of B and B is a parent of C
+uncle(A, C) :-
+    sibling(A, B),
+    parent(B, C),
+    male(A).
+
+% A is an aunt of C if A is a sibling of B and B is a parent of C
+aunt(A, C) :-
+    sibling(A, B),
+    parent(B, C),
+    female(A).
+
+% A is a cousin of B if their parents are siblings
+cousin(A, B) :-
+    parent(P1, A),
+    parent(P2, B),
+    sibling(P1, P2).
+
+% Entry point for querying relationships
+family_tree_query :-
+    write('Enter the relationship you want to query (father, mother, grandparent, sibling, brother, sister, uncle, aunt, cousin): '), nl,
+    read(Relationship),
+    write('Enter the first person: '), nl,
+    read(Person1),
+    write('Enter the second person: '), nl,
+    read(Person2),
+    ( call(Relationship, Person1, Person2) ->
+        format('~w is the ~w of ~w.', [Person1, Relationship, Person2])
+    ;
+        format('~w is not the ~w of ~w.', [Person1, Relationship, Person2])
+    ).
+
+% Example queries
+% ?- father(john, mary).
+% ?- grandparent(susan, peter).
+% ?- sibling(mary, james).
+% ?- uncle(james, peter).
