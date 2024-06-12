@@ -1,0 +1,45 @@
+% Define the students
+student(john).
+student(mary).
+student(tom).
+student(alice).
+
+% Define the teachers
+teacher(mr_smith).
+teacher(ms_jones).
+teacher(mr_brown).
+
+% Define the subjects and their codes
+subject(math, 101).
+subject(science, 102).
+subject(history, 103).
+
+% Define which teacher teaches which subject
+teaches(mr_smith, math).
+teaches(ms_jones, science).
+teaches(mr_brown, history).
+
+% Define which student is enrolled in which subject
+enrolled(john, math).
+enrolled(mary, science).
+enrolled(tom, history).
+enrolled(alice, math).
+enrolled(john, science).
+
+% Rule to find the teacher of a student
+teacher_of_student(Student, Teacher) :-
+    enrolled(Student, Subject),
+    teaches(Teacher, Subject).
+
+% Rule to find the subject code for a student's subject
+subject_code_for_student(Student, Code) :-
+    enrolled(Student, Subject),
+    subject(Subject, Code).
+
+% Rule to find all students of a particular teacher
+students_of_teacher(Teacher, Students) :-
+    findall(Student, (teaches(Teacher, Subject), enrolled(Student, Subject)), Students).
+
+% Rule to find all subjects and their codes taught by a teacher
+subjects_and_codes_of_teacher(Teacher, SubjectsAndCodes) :-
+    findall((Subject, Code), (teaches(Teacher, Subject), subject(Subject, Code)), SubjectsAndCodes).
