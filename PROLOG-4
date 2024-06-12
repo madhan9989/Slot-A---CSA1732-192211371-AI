@@ -1,0 +1,34 @@
+% Define the planets and their attributes
+% planet(Name, DistanceFromSun, Mass, NumberOfMoons).
+
+planet(mercury, 57.91, 0.330, 0).
+planet(venus, 108.2, 4.87, 0).
+planet(earth, 149.6, 5.97, 1).
+planet(mars, 227.9, 0.642, 2).
+planet(jupiter, 778.5, 1898, 79).
+planet(saturn, 1434, 568, 82).
+planet(uranus, 2871, 86.8, 27).
+planet(neptune, 4495, 102, 14).
+planet(pluto, 5906, 0.0146, 5). % Pluto is now classified as a dwarf planet, but including it for completeness.
+
+% Rule to find planets with more than a given number of moons
+planets_with_more_than_moons(NumberOfMoons, Planets) :-
+    findall(Planet, (planet(Planet, _, _, Moons), Moons > NumberOfMoons), Planets).
+
+% Rule to find the heaviest planet
+heaviest_planet(Planet) :-
+    findall(Mass-Name, planet(Name, _, Mass, _), MassPlanetPairs),
+    max_member(_-Planet, MassPlanetPairs).
+
+% Rule to find the closest planet to the sun
+closest_planet_to_sun(Planet) :-
+    findall(Distance-Name, planet(Name, Distance, _, _), DistancePlanetPairs),
+    min_member(_-Planet, DistancePlanetPairs).
+
+% Rule to find planets within a certain distance range from the sun
+planets_within_distance_range(MinDistance, MaxDistance, Planets) :-
+    findall(Planet, (planet(Planet, Distance, _, _), Distance >= MinDistance, Distance =< MaxDistance), Planets).
+
+% Rule to find planets by name
+planet_by_name(Name, DistanceFromSun, Mass, NumberOfMoons) :-
+    planet(Name, DistanceFromSun, Mass, NumberOfMoons).
