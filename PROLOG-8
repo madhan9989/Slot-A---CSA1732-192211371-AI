@@ -1,0 +1,28 @@
+% Facts: Disease and their dietary recommendations
+
+diet(diabetes, 'Avoid sugary foods, consume high-fiber foods, eat whole grains, and avoid high-fat dairy products.').
+diet(hypertension, 'Reduce salt intake, avoid processed foods, eat plenty of fruits and vegetables, and consume low-fat dairy products.').
+diet(heart_disease, 'Eat a lot of fruits and vegetables, whole grains, lean proteins, and avoid saturated fats and trans fats.').
+diet(obesity, 'Consume a balanced diet rich in fruits, vegetables, whole grains, and lean proteins, and avoid high-calorie, low-nutrient foods.').
+diet(anemia, 'Eat iron-rich foods such as red meat, beans, and leafy green vegetables, and consume vitamin C to enhance iron absorption.').
+diet(gastric_ulcer, 'Avoid spicy foods, acidic foods, and caffeinated beverages, and consume a diet rich in fiber and non-acidic fruits and vegetables.').
+diet(lactose_intolerance, 'Avoid dairy products, and consume lactose-free or plant-based milk alternatives.').
+diet(gluten_intolerance, 'Avoid gluten-containing foods such as wheat, barley, and rye, and consume gluten-free grains like rice and quinoa.').
+
+% Rule to suggest a diet based on the disease
+suggest_diet(Disease, Recommendation) :-
+    diet(Disease, Recommendation).
+
+% Entry point for querying diet recommendations
+diet_query :-
+    write('Enter the disease: '), nl,
+    read(Disease),
+    ( suggest_diet(Disease, Recommendation) ->
+        format('Recommended diet for ~w: ~w', [Disease, Recommendation])
+    ;
+        format('No dietary recommendations found for ~w.', [Disease])
+    ).
+
+% Example queries
+% ?- suggest_diet(diabetes, Recommendation).
+% ?- diet_query.
