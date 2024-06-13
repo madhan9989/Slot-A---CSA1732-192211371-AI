@@ -1,0 +1,47 @@
+% Facts
+fact(ann).
+fact(bob).
+fact(charlie).
+fact(god(zeus)).
+fact(god(hera)).
+
+% Rules
+rule(mortal(X), [fact(X)]).
+rule(fears(X, Y), [mortal(X), god(Y)]).
+
+% Forward Chaining
+forward_chain :-
+    apply_rules,
+    write('Forward chaining completed.'), nl.
+
+apply_rules :-
+    findall([Head, Body], rule(Head, Body), Rules),
+    apply_rules(Rules).
+
+apply_rules([]).
+apply_rules([[Head, Body] | Rules]) :-
+    satisfy(Body),
+    \+ fact(Head), % Check if the fact is not already known
+    assertz(fact(Head)), % Assert new fact
+    write('Derived: '), write(Head), nl,
+    apply_rules(Rules).
+apply_rules([_ | Rules]) :-
+    apply_rules(Rules).
+
+% Satisfy a list of conditions
+satisfy([]).
+satisfy([Cond | Rest]) :-
+    fact(Cond),
+    satisfy(Rest).
+
+% Querying the facts
+query_facts :-
+    forward_chain,
+    write('Known facts:'), nl,
+    list_facts.
+
+list_facts :-
+    fact(F),
+    write(F), nl,
+    fail.
+list_facts.
