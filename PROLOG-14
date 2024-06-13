@@ -1,0 +1,34 @@
+% Facts: defining some animals and their diets
+eats(lion, meat).
+eats(tiger, meat).
+eats(deer, plants).
+eats(zebra, plants).
+
+% Rule: defining what it means to be a carnivore
+carnivore(X) :- eats(X, meat).
+
+% Query to check if an animal is a carnivore
+% This will trigger backward chaining to check if the animal is known to eat meat.
+query_carnivore(X) :- carnivore(X), write(X), write(' is a carnivore.').
+
+% Example queries:
+% 1. Is lion a carnivore?
+% query_carnivore(lion).
+
+% 2. Is zebra a carnivore?
+% query_carnivore(zebra).
+
+% 3. Who are the carnivores?
+% To find all carnivores, we can query all animals X for which carnivore(X) is true.
+% carnivore(X). 
+
+% Example usage:
+% ?- query_carnivore(lion).
+% Output: lion is a carnivore.
+
+% ?- query_carnivore(zebra).
+% Output: false.
+
+% ?- carnivore(X).
+% Output: X = lion ;
+%         X = tiger.
