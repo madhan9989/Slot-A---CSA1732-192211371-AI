@@ -1,0 +1,80 @@
+% Define the facts: fruits and their colors
+fruit_color(apple, red).
+fruit_color(banana, yellow).
+fruit_color(grape, purple).
+fruit_color(orange, orange).
+fruit_color(lemon, yellow).
+fruit_color(blueberry, blue).
+fruit_color(strawberry, red).
+
+% Query to find the color of a given fruit
+find_color(Fruit, Color) :-
+    fruit_color(Fruit, Color).
+
+% Query to find all fruits of a given color
+find_fruits_of_color(Color) :-
+    fruit_color(Fruit, Color),
+    write(Fruit), nl,
+    fail.
+find_fruits_of_color(_).
+
+% Example usage:
+% ?- find_color(apple, Color).
+% ?- find_fruits_of_color(yellow).
+:- dynamic edge/3.
+
+% Define edges in the form of edge(Node1, Node2, Cost)
+edge(a, b, 1).
+edge(a, c, 3).
+edge(b, d, 2).
+edge(c, d, 4).
+edge(c, e, 2).
+edge(d, e, 1).
+edge(e, f, 5).
+
+% Define the heuristic function h(Node, HeuristicValue)
+% These values should represent the estimated cost from Node to the goal
+h(a, 5).
+h(b, 3).
+h(c, 4).
+h(d, 2).
+h(e, 6).
+h(f, 0).
+
+% Best First Search implementation
+best_first_search(Start, Goal, Path, Cost) :-
+    bfs([[Start]], Goal, Path, Cost).
+
+bfs([[Goal | RestPath] | _], Goal, Path, Cost) :-
+    reverse([Goal | RestPath], Path),
+    calculate_cost(Path, Cost).
+
+bfs([[CurrentNode | RestPath] | RestQueue], Goal, Path, Cost) :-
+    findall([NextNode, CurrentNode | RestPath],
+            (edge(CurrentNode, NextNode, _), \+ member(NextNode, [CurrentNode | RestPath])),
+            Children),
+    sort_by_heuristic(Children, SortedChildren),
+    append(RestQueue, SortedChildren, NewQueue),
+    bfs(NewQueue, Goal, Path, Cost).
+
+% Sorting function based on heuristic values
+sort_by_heuristic(List, Sorted) :-
+    map_list_to_pairs(get_heuristic_value, List, Pairs),
+    keysort(Pairs, SortedPairs),
+    pairs_values(SortedPairs, Sorted).
+
+get_heuristic_value([Node | _], HValue) :-
+    h(Node, HValue).
+
+% Calculate the total cost of the path
+calculate_cost([_], 0).
+calculate_cost([Node1, Node2 | Rest], Cost) :-
+    edge(Node1, Node2, StepCost),
+    calculate_cost([Node2 | Rest], RestCost),
+    Cost is StepCost + RestCost.
+
+% Example usage
+example :-
+    best_first_search(a, f, Path, Cost),
+    write('Path: '), write(Path), nl,
+    write('Cost: '), write(Cost), nl.
