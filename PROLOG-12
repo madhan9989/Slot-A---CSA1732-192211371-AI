@@ -1,0 +1,81 @@
+% Define the symptoms for each disease
+disease(flu) :-
+    symptom(fever),
+    symptom(cough),
+    symptom(sore_throat),
+    symptom(runny_nose).
+
+disease(cold) :-
+    symptom(cough),
+    symptom(runny_nose),
+    symptom(sneezing),
+    symptom(sore_throat).
+
+disease(covid19) :-
+    symptom(fever),
+    symptom(cough),
+    symptom(shortness_of_breath),
+    symptom(loss_of_taste_or_smell).
+
+disease(allergy) :-
+    symptom(runny_nose),
+    symptom(sneezing),
+    symptom(itchy_eyes).
+
+% Asking for symptoms
+ask(fever) :-
+    write('Do you have a fever? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+ask(cough) :-
+    write('Do you have a cough? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+ask(sore_throat) :-
+    write('Do you have a sore throat? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+ask(runny_nose) :-
+    write('Do you have a runny nose? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+ask(sneezing) :-
+    write('Do you have sneezing? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+ask(shortness_of_breath) :-
+    write('Do you have shortness of breath? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+ask(loss_of_taste_or_smell) :-
+    write('Do you have loss of taste or smell? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+ask(itchy_eyes) :-
+    write('Do you have itchy eyes? (yes/no)'), nl,
+    read(Reply),
+    Reply = yes.
+
+% Check if a symptom is present by asking the user
+symptom(S) :-
+    ask(S).
+
+% Start the diagnosis
+diagnose :-
+    disease(Disease),
+    write('You may have '), write(Disease), nl, nl, fail.
+diagnose :-
+    write('No diagnosis could be made.'), nl.
+
+% Start the program
+start :-
+    write('Welcome to the medical diagnosis system.'), nl,
+    write('Please answer the following questions:'), nl, nl,
+    diagnose.
