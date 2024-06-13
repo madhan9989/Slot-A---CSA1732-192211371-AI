@@ -1,0 +1,57 @@
+% Define the initial state
+% state(MonkeyLocation, BoxLocation, MonkeyOnBox, HasBanana)
+initial_state(state(at_door, at_window, on_floor, has_not)).
+
+% Define the goal state
+goal_state(state(_, _, _, has)).
+
+% Possible actions:
+% - walk(MonkeyLocation, NewMonkeyLocation)
+% - push(MonkeyLocation, NewMonkeyLocation, BoxLocation, NewBoxLocation)
+% - climb(MonkeyLocation, BoxLocation)
+% - grasp(MonkeyLocation, BoxLocation)
+
+% Action: walk
+move(state(MonkeyLocation, BoxLocation, on_floor, HasBanana),
+     walk(MonkeyLocation, NewMonkeyLocation),
+     state(NewMonkeyLocation, BoxLocation, on_floor, HasBanana)) :-
+    MonkeyLocation \= NewMonkeyLocation.
+
+% Action: push
+move(state(MonkeyLocation, MonkeyLocation, on_floor, HasBanana),
+     push(MonkeyLocation, NewMonkeyLocation, MonkeyLocation, NewMonkeyLocation),
+     state(NewMonkeyLocation, NewMonkeyLocation, on_floor, HasBanana)) :-
+    MonkeyLocation \= NewMonkeyLocation.
+
+% Action: climb
+move(state(MonkeyLocation, BoxLocation, on_floor, HasBanana),
+     climb(MonkeyLocation, BoxLocation),
+     state(MonkeyLocation, BoxLocation, on_box, HasBanana)) :-
+    MonkeyLocation = BoxLocation.
+
+% Action: grasp
+move(state(MonkeyLocation, BoxLocation, on_box, has_not),
+     grasp(MonkeyLocation, BoxLocation),
+     state(MonkeyLocation, BoxLocation, on_box, has)) :-
+    MonkeyLocation = BoxLocation.
+
+% Define a plan to reach the goal state from the initial state
+plan(State, Plan) :-
+    goal_state(State),
+    Plan = [].
+plan(State, [Action | RestOfPlan]) :-
+    move(State, Action, NewState),
+    plan(NewState, RestOfPlan).
+
+% Find a solution
+solve :-
+    initial_state(State),
+    plan(State, Plan),
+    write('Plan: '), nl,
+    write_plan(Plan).
+
+% Helper to print the plan
+write_plan([]).
+write_plan([Action | RestOfPlan]) :-
+    write(Action), nl,
+    write_plan(RestOfPlan).
