@@ -1,0 +1,28 @@
+% Facts about fruits and their colors
+fruit_color(apple, red).
+fruit_color(apple, green).
+fruit_color(banana, yellow).
+fruit_color(grape, purple).
+fruit_color(grape, green).
+fruit_color(orange, orange).
+fruit_color(lemon, yellow).
+fruit_color(blueberry, blue).
+fruit_color(strawberry, red).
+
+% Query to find the color of a given fruit
+find_color(Fruit, Color) :-
+    fruit_color(Fruit, Color).
+
+% Query to find all fruits of a given color
+find_fruit(Color, Fruit) :-
+    fruit_color(Fruit, Color).
+
+% Example queries:
+
+% To find the color of an apple:
+% ?- find_color(apple, Color).
+% Output: Color = red ; Color = green.
+
+% To find all fruits that are yellow:
+% ?- find_fruit(yellow, Fruit).
+% Output: Fruit = banana ; Fruit = lemon.
